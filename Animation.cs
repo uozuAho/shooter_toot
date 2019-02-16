@@ -1,43 +1,41 @@
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ShooterToot3
 {
     public class Animation
     {
-        Texture2D spriteStrip;
-        float scale;
-        int elapsedTime;
-        int frameTime;
-        int frameCount;
-        int currentFrame;
-        Color color;
-        Rectangle sourceRect = new Rectangle();
-        Rectangle destinationRect = new Rectangle();
         public int FrameWidth;
         public int FrameHeight;
         public bool Active;
         public bool Looping;
         public Vector2 Position;
-
+        
+        private Texture2D _spriteStrip;
+        private float _scale;
+        private int _elapsedTime;
+        private int _frameTime;
+        private int _frameCount;
+        private int _currentFrame;
+        private Color _color;
+        private Rectangle _sourceRect;
+        private Rectangle _destinationRect;
 
         public void Initialize(Texture2D texture, Vector2 position, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
         {
-            color = color;
+            _color = color;
             FrameWidth = frameWidth;
             FrameHeight = frameHeight;
-            frameCount = frameCount;
-            frameTime = frametime;
-            scale = scale;
+            _frameCount = frameCount;
+            _frameTime = frametime;
+            _scale = scale;
 
             Looping = looping;
             Position = position;
-            spriteStrip = texture;
+            _spriteStrip = texture;
 
-            elapsedTime = 0;
-            currentFrame = 0;
+            _elapsedTime = 0;
+            _currentFrame = 0;
 
             Active = true;
         }
@@ -45,35 +43,35 @@ namespace ShooterToot3
         public void Update(GameTime gameTime)
         {
             if (Active == false) return;
-            elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+            _elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            if (elapsedTime > frameTime)
+            if (_elapsedTime > _frameTime)
             {
-                currentFrame++;
+                _currentFrame++;
 
-                if (currentFrame == frameCount)
+                if (_currentFrame == _frameCount)
                 {
-                    currentFrame = 0;
+                    _currentFrame = 0;
 
                     if (Looping == false) Active = false;
                 }
 
-                elapsedTime = 0;
+                _elapsedTime = 0;
             }
 
-            sourceRect = new Rectangle(currentFrame * FrameWidth, 0, FrameWidth, FrameHeight);  
+            _sourceRect = new Rectangle(_currentFrame * FrameWidth, 0, FrameWidth, FrameHeight);  
 
-            destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2,
-                (int)Position.Y - (int)(FrameHeight * scale) / 2,
-                (int)(FrameWidth * scale),
-                (int)(FrameHeight * scale));
+            _destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * _scale) / 2,
+                (int)Position.Y - (int)(FrameHeight * _scale) / 2,
+                (int)(FrameWidth * _scale),
+                (int)(FrameHeight * _scale));
         }
         
         public void Draw(SpriteBatch spriteBatch)
         {
             if (Active)
             {
-                spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color);
+                spriteBatch.Draw(_spriteStrip, _destinationRect, _sourceRect, _color);
             }
         }
     }
