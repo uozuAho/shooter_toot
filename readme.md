@@ -5,7 +5,8 @@
 
 # getting started
 
-- to create this project from scratch, do
+to create this project from scratch, do
+
 ```
 # install monogame. See monogame website for how to
 dotnet new -i "MonoGame.Template.CSharp"

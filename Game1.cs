@@ -8,18 +8,24 @@ namespace ShooterToot3
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Player player;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            player = new Player();
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            var playerPosition = new Vector2(
+                GraphicsDevice.Viewport.TitleSafeArea.X,
+                GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+            
+            player.Initialize(Content.Load<Texture2D>("Graphics/dude"), playerPosition);
+            
             base.Initialize();
         }
 
@@ -44,7 +50,9 @@ namespace ShooterToot3
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            player.Draw(spriteBatch);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
