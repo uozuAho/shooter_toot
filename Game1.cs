@@ -29,19 +29,24 @@ namespace ShooterToot3
 
         protected override void Initialize()
         {
-            var playerPosition = new Vector2(
-                GraphicsDevice.Viewport.TitleSafeArea.X,
-                GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
-            
-            _player.Initialize(Content.Load<Texture2D>("Graphics/dude"), playerPosition);
             _playerMoveSpeed = 8.0f;
-            
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            var playerAnimation = new Animation();
+            var playerTexture = Content.Load<Texture2D>("Graphics\\dudes_400x100");
+
+            playerAnimation.Initialize(playerTexture, Vector2.Zero, 100, 100, 4, 300, Color.White, 1f, true);
+
+            var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,
+                GraphicsDevice.Viewport.TitleSafeArea.Y
+                + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+
+            _player.Initialize(playerAnimation, playerPosition);
         }
 
         protected override void Update(GameTime gameTime)
@@ -61,6 +66,8 @@ namespace ShooterToot3
         
         private void UpdatePlayer(GameTime gameTime)
         {
+            _player.Update(gameTime);
+            
             _player.Position.X += currentGamePadState.ThumbSticks.Left.X * _playerMoveSpeed;
             _player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * _playerMoveSpeed;
             

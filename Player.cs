@@ -4,35 +4,35 @@ namespace ShooterToot3
 {
     public class Player
     {
-        private Texture2D _playerTexture;
         public Vector2 Position;
+        public int Width => _playerAnimation.FrameWidth;
+        public int Height => _playerAnimation.FrameHeight;
+
         private bool _active;
         private int _health;
-
-        public int Width => _playerTexture.Width;
-
-        public int Height => _playerTexture.Height;
+        private Animation _playerAnimation;
 
         public Player()
         {
         }
 
-        public void Initialize(Texture2D texture, Vector2 position)
+        public void Initialize(Animation animation, Vector2 position)
         {
-            _playerTexture = texture;
+            _playerAnimation = animation;
             Position = position;
             _active = true;
             _health = 100;
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
+            _playerAnimation.Position = Position;
+            _playerAnimation.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_playerTexture, Position, null, Color.White, 0f, Vector2.Zero, 1f,
-                SpriteEffects.None, 0f);
+            _playerAnimation.Draw(spriteBatch);
         }
     }
 }
