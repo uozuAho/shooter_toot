@@ -1,6 +1,7 @@
 # 'Shooter game' tute
 
-- following http://www.monogame.net/documentation/?page=Tutorials
+- Made following the "Building a Shooter Game" tutorial at
+  http://www.monogame.net/documentation/?page=Tutorials
 - using linux + rider + dotnet instead
 
 # getting started
