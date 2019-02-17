@@ -11,19 +11,12 @@ namespace ShooterToot3
         private readonly Player _player;
 
         private KeyboardState _currentKeyboardState;
-        private KeyboardState _previousKeyboardState;
         private GamePadState _currentGamePadState;
-        private GamePadState _previousGamePadState;
-        private MouseState _currentMouseState;
-        private MouseState _previousMouseState;
 
         private float _playerMoveSpeed;
-        
-        Texture2D mainBackground;
-        Rectangle rectBackground;
-        float scale = 1f;
-        private ScrollingBackground _bgLayer1;
-        private ScrollingBackground _bgLayer2;
+
+        private readonly ScrollingBackground _bgLayer1;
+        private readonly ScrollingBackground _bgLayer2;
 
         public Game1()
         {
@@ -65,8 +58,6 @@ namespace ShooterToot3
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             
-            _previousGamePadState = _currentGamePadState;
-            _previousKeyboardState = _currentKeyboardState;
             _currentKeyboardState = Keyboard.GetState();
             _currentGamePadState = GamePad.GetState(PlayerIndex.One);
             
