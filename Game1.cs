@@ -9,15 +9,21 @@ namespace ShooterToot3
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private readonly Player _player;
-        
-        KeyboardState currentKeyboardState;
-        KeyboardState previousKeyboardState;
-        GamePadState currentGamePadState;
-        GamePadState previousGamePadState;
-        MouseState currentMouseState;
-        MouseState previousMouseState;
+
+        private KeyboardState _currentKeyboardState;
+        private KeyboardState _previousKeyboardState;
+        private GamePadState _currentGamePadState;
+        private GamePadState _previousGamePadState;
+        private MouseState _currentMouseState;
+        private MouseState _previousMouseState;
 
         private float _playerMoveSpeed;
+        
+        Texture2D mainBackground;
+        Rectangle rectBackground;
+        float scale = 1f;
+        private ParallaxBackground _bgLayer1;
+        private ParallaxBackground _bgLayer2;
 
         public Game1()
         {
@@ -25,6 +31,8 @@ namespace ShooterToot3
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _player = new Player();
+            _bgLayer1 = new ParallaxBackground();
+            _bgLayer2 = new ParallaxBackground();
         }
 
         protected override void Initialize()
@@ -47,6 +55,9 @@ namespace ShooterToot3
                 + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 
             _player.Initialize(playerAnimation, playerPosition);
+            
+            _bgLayer1.Initialize(Content, "Graphics/bg1", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -1);
+            _bgLayer2.Initialize(Content, "Graphics/bg2", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -2);
         }
 
         protected override void Update(GameTime gameTime)
@@ -54,12 +65,15 @@ namespace ShooterToot3
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             
-            previousGamePadState = currentGamePadState;
-            previousKeyboardState = currentKeyboardState;
-            currentKeyboardState = Keyboard.GetState();
-            currentGamePadState = GamePad.GetState(PlayerIndex.One);
+            _previousGamePadState = _currentGamePadState;
+            _previousKeyboardState = _currentKeyboardState;
+            _currentKeyboardState = Keyboard.GetState();
+            _currentGamePadState = GamePad.GetState(PlayerIndex.One);
             
             UpdatePlayer(gameTime);
+            
+            _bgLayer1.Update(gameTime);
+            _bgLayer2.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -68,19 +82,19 @@ namespace ShooterToot3
         {
             _player.Update(gameTime);
             
-            _player.Position.X += currentGamePadState.ThumbSticks.Left.X * _playerMoveSpeed;
-            _player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * _playerMoveSpeed;
+            _player.Position.X += _currentGamePadState.ThumbSticks.Left.X * _playerMoveSpeed;
+            _player.Position.Y -= _currentGamePadState.ThumbSticks.Left.Y * _playerMoveSpeed;
             
-            if (currentKeyboardState.IsKeyDown(Keys.Left) || currentGamePadState.DPad.Left == ButtonState.Pressed)
+            if (_currentKeyboardState.IsKeyDown(Keys.Left) || _currentGamePadState.DPad.Left == ButtonState.Pressed)
                 _player.Position.X -= _playerMoveSpeed;
 
-            if (currentKeyboardState.IsKeyDown(Keys.Right) || currentGamePadState.DPad.Right == ButtonState.Pressed)
+            if (_currentKeyboardState.IsKeyDown(Keys.Right) || _currentGamePadState.DPad.Right == ButtonState.Pressed)
                 _player.Position.X += _playerMoveSpeed;
 
-            if (currentKeyboardState.IsKeyDown(Keys.Up) || currentGamePadState.DPad.Up == ButtonState.Pressed)
+            if (_currentKeyboardState.IsKeyDown(Keys.Up) || _currentGamePadState.DPad.Up == ButtonState.Pressed)
                 _player.Position.Y -= _playerMoveSpeed;
 
-            if (currentKeyboardState.IsKeyDown(Keys.Down) || currentGamePadState.DPad.Down == ButtonState.Pressed)
+            if (_currentKeyboardState.IsKeyDown(Keys.Down) || _currentGamePadState.DPad.Down == ButtonState.Pressed)
                 _player.Position.Y += _playerMoveSpeed;
             
             _player.Position.X = MathHelper.Clamp(_player.Position.X, 0, GraphicsDevice.Viewport.Width - _player.Width);
@@ -93,6 +107,8 @@ namespace ShooterToot3
 
             _spriteBatch.Begin();
             _player.Draw(_spriteBatch);
+            _bgLayer1.Draw(_spriteBatch);
+            _bgLayer2.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
