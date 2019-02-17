@@ -22,8 +22,8 @@ namespace ShooterToot3
         Texture2D mainBackground;
         Rectangle rectBackground;
         float scale = 1f;
-        private ParallaxBackground _bgLayer1;
-        private ParallaxBackground _bgLayer2;
+        private ScrollingBackground _bgLayer1;
+        private ScrollingBackground _bgLayer2;
 
         public Game1()
         {
@@ -31,8 +31,8 @@ namespace ShooterToot3
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _player = new Player();
-            _bgLayer1 = new ParallaxBackground();
-            _bgLayer2 = new ParallaxBackground();
+            _bgLayer1 = new ScrollingBackground();
+            _bgLayer2 = new ScrollingBackground();
         }
 
         protected override void Initialize()
@@ -106,9 +106,9 @@ namespace ShooterToot3
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _player.Draw(_spriteBatch);
             _bgLayer1.Draw(_spriteBatch);
             _bgLayer2.Draw(_spriteBatch);
+            _player.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
