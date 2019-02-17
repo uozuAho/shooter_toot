@@ -118,8 +118,7 @@ namespace ShooterToot3
 
             var laserPosition = _player.Position;
             // Adjust the position slightly to match the muzzle of the cannon.
-            laserPosition.Y += 37;
-            laserPosition.X += 70;
+            laserPosition.X += 20;
     
             laser.Initialize(laserAnimation, laserPosition);
             laserBeams.Add(laser);
