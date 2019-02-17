@@ -9,6 +9,7 @@ namespace ShooterToot3
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private readonly Player _player;
+        private readonly Enemy _enemy;
 
         private KeyboardState _currentKeyboardState;
         private GamePadState _currentGamePadState;
@@ -24,6 +25,7 @@ namespace ShooterToot3
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _player = new Player();
+            _enemy = new Enemy();
             _bgLayer1 = new ScrollingBackground();
             _bgLayer2 = new ScrollingBackground();
         }
@@ -38,6 +40,15 @@ namespace ShooterToot3
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             
+            LoadAndInitPlayer();
+            LoadAndInitEnemy();
+
+            _bgLayer1.Initialize(Content, "Graphics/bg1", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -1);
+            _bgLayer2.Initialize(Content, "Graphics/bg2", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -2);
+        }
+
+        private void LoadAndInitPlayer()
+        {
             var playerAnimation = new Animation();
             var playerTexture = Content.Load<Texture2D>("Graphics\\dudes_400x100");
 
@@ -48,9 +59,19 @@ namespace ShooterToot3
                 + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 
             _player.Initialize(playerAnimation, playerPosition);
+        }
+
+        private void LoadAndInitEnemy()
+        {
+            var texture = Content.Load<Texture2D>("Graphics\\enemy");
             
-            _bgLayer1.Initialize(Content, "Graphics/bg1", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -1);
-            _bgLayer2.Initialize(Content, "Graphics/bg2", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -2);
+            var position = new Vector2(
+                GraphicsDevice.Viewport.TitleSafeArea.X
+                + GraphicsDevice.Viewport.TitleSafeArea.Width / 2,
+                GraphicsDevice.Viewport.TitleSafeArea.Y
+                + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+            
+            _enemy.Initialize(texture, position);
         }
 
         protected override void Update(GameTime gameTime)
@@ -100,6 +121,7 @@ namespace ShooterToot3
             _bgLayer1.Draw(_spriteBatch);
             _bgLayer2.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
+            _enemy.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
