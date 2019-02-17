@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -18,6 +20,11 @@ namespace ShooterToot3
 
         private readonly ScrollingBackground _bgLayer1;
         private readonly ScrollingBackground _bgLayer2;
+        
+        Texture2D _laserTexture;
+        TimeSpan laserSpawnTime;
+        TimeSpan previousLaserSpawnTime;
+        List<Laser> laserBeams;
 
         public Game1()
         {
@@ -42,6 +49,8 @@ namespace ShooterToot3
             
             LoadAndInitPlayer();
             LoadAndInitEnemy();
+            _laserTexture = Content.Load<Texture2D>("Graphics\\laser");
+            InitLaser();
 
             _bgLayer1.Initialize(Content, "Graphics/bg1", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -1);
             _bgLayer2.Initialize(Content, "Graphics/bg2", GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, -2);
@@ -74,6 +83,48 @@ namespace ShooterToot3
             _enemy.Initialize(texture, position);
         }
 
+        private void InitLaser()
+        {
+            laserBeams = new List<Laser>();
+            const float SECONDS_IN_MINUTE = 60f;
+            const float RATE_OF_FIRE = 600f ;
+            laserSpawnTime = TimeSpan.FromSeconds(SECONDS_IN_MINUTE / RATE_OF_FIRE);
+            previousLaserSpawnTime = TimeSpan.Zero;
+        }
+        
+        private void FireLaser(GameTime gameTime)
+        {
+            if (gameTime.TotalGameTime - previousLaserSpawnTime <= laserSpawnTime) return;
+            
+            previousLaserSpawnTime = gameTime.TotalGameTime;
+            AddLaser();
+        }
+        
+        private void AddLaser()
+        {
+            var laserAnimation = new Animation();
+            
+            laserAnimation.Initialize(_laserTexture,
+                _player.Position,
+                20,
+                5,
+                1, 
+                30,
+                Color.White,
+                1f,
+                true);
+
+            var laser = new Laser();
+
+            var laserPosition = _player.Position;
+            // Adjust the position slightly to match the muzzle of the cannon.
+            laserPosition.Y += 37;
+            laserPosition.X += 70;
+    
+            laser.Initialize(laserAnimation, laserPosition);
+            laserBeams.Add(laser);
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -83,13 +134,26 @@ namespace ShooterToot3
             _currentGamePadState = GamePad.GetState(PlayerIndex.One);
             
             UpdatePlayer(gameTime);
+            UpdateLasers(gameTime);
             
             _bgLayer1.Update(gameTime);
             _bgLayer2.Update(gameTime);
 
             base.Update(gameTime);
         }
-        
+
+        private void UpdateLasers(GameTime gameTime)
+        {
+            for (var i = 0; i < laserBeams.Count; i++)
+            {
+                laserBeams[i].Update(gameTime);
+                if (!laserBeams[i].Active || laserBeams[i].Position.X > GraphicsDevice.Viewport.Width)
+                {
+                    laserBeams.Remove(laserBeams[i]);
+                }
+            }
+        }
+
         private void UpdatePlayer(GameTime gameTime)
         {
             _player.Update(gameTime);
@@ -109,6 +173,9 @@ namespace ShooterToot3
             if (_currentKeyboardState.IsKeyDown(Keys.Down) || _currentGamePadState.DPad.Down == ButtonState.Pressed)
                 _player.Position.Y += _playerMoveSpeed;
             
+            if (_currentKeyboardState.IsKeyDown(Keys.Space) || _currentGamePadState.Buttons.X == ButtonState.Pressed)
+                FireLaser(gameTime);
+            
             _player.Position.X = MathHelper.Clamp(_player.Position.X, 0, GraphicsDevice.Viewport.Width - _player.Width);
             _player.Position.Y = MathHelper.Clamp(_player.Position.Y, 0, GraphicsDevice.Viewport.Height - _player.Height);
         }
@@ -122,6 +189,7 @@ namespace ShooterToot3
             _bgLayer2.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
             _enemy.Draw(_spriteBatch);
+            foreach (var l in laserBeams) l.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
